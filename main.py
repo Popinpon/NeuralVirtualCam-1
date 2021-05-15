@@ -1,4 +1,9 @@
-import pyfakewebcam
+import os 
+if os.name=='posix':#linux or Mac
+    import pyfakewebcam
+if os.name =='nt':#Windows
+    import pyvirtualcam
+
 import cv2
 import sys
 import torch
@@ -41,11 +46,17 @@ def stylize_img(model, img, device="cuda:0"):
 
 
 if __name__ == '__main__':
-    cam_id = int(sys.argv[1])
-    virtual_device_path = sys.argv[2]
+    try:
+        arg=int(sys.argv[1])  
+    except ValueError:
+        arg=sys.argv[1]
+
+    cam_id = arg
+    if os.name=='posix':
+        virtual_device_path = sys.argv[2]
 
     cap = cv2.VideoCapture(cam_id)
-    virtual_camera = pyfakewebcam.FakeWebcam(virtual_device_path, 640, 480)
+
 
     model0 = get_model('fast_neural_style/saved_models/candy.pth')
     model1 = get_model('fast_neural_style/saved_models/mosaic.pth')
@@ -53,40 +64,45 @@ if __name__ == '__main__':
     model3 = get_model('fast_neural_style/saved_models/udnie.pth')
 
     model = model0
+    #virtual_camera = pyfakewebcam.FakeWebcam(virtual_device_path, 640, 480)
+    with pyvirtualcam.Camera(width=int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), height=int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)), fps=30) as cam:
+        print('START!')        
+        while (True):
+            ret, frame = cap.read()
 
-    while (True):
-        ret, frame = cap.read()
-
-        if ret:
-            if model is not None:
-                dst_img = stylize_img(model, cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-                virtual_camera.schedule_frame(dst_img)
-                dst_img = cv2.cvtColor(dst_img, cv2.COLOR_RGB2BGR)
-
+            if ret:
+                if model is not None:
+                    dst_img=frame
+                    dst_img = stylize_img(model, cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+                    #virtual_camera.schedule_frame(dst_img)
+                    cam.send(dst_img)
+                    dst_img = cv2.cvtColor(dst_img, cv2.COLOR_RGB2BGR)
+                    #cam.sleep_until_next_frame()
+                else:
+                    dst_img = frame
+                    #virtual_camera.schedule_frame(cv2.cvtColor(dst_img, cv2.COLOR_BGR2RGB))
+                    cam.send(cv2.cvtColor(dst_img, cv2.COLOR_BGR2RGB))
+                    #cam.sleep_until_next_frame()
+                cv2.imshow('frame', dst_img)
             else:
-                dst_img = frame
-                virtual_camera.schedule_frame(cv2.cvtColor(dst_img, cv2.COLOR_BGR2RGB))
+                print('cannot get frame')
+            
+            key = cv2.waitKey(1)
 
-            cv2.imshow('frame', dst_img)
-        else:
-            print('cannot get frame')
-        
-        key = cv2.waitKey(5)
+            if key == ord('a'):
+                model = model0
 
-        if key == ord('a'):
-            model = model0
+            if key == ord('s'):
+                model = model1
 
-        if key == ord('s'):
-            model = model1
+            if key == ord('d'):
+                model = model2
 
-        if key == ord('d'):
-            model = model2
+            if key == ord('f'):
+                model = model3
+            
+            if key == ord('z'):
+                model = None
 
-        if key == ord('f'):
-            model = model3
-        
-        if key == ord('z'):
-            model = None
-
-        if key == ord('q'):
-            break
+            if key == ord('q'):
+                break
