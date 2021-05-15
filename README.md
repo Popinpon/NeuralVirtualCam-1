@@ -1,3 +1,4 @@
+based on https://github.com/nenoNaninu/NeuralVirtualCam
 # NeuralVirtualCam
 実際のカメラから取得した画像をGANで変換して仮想カメラ経由で垂れ流すやつ。
 Linux専用かつGPU必須。
@@ -8,12 +9,14 @@ $ apt-get install v4l2loopback-utils
 
 $ conda install pytorch torchvision cudatoolkit=10.1 -c pytorch
 $ conda install -c conda-forge opencv
-$ pip install pyfakewebcam
+
+$ pip install pyfakewebcam #for Linux
+$ pip install pyvirtualcam #fo Windows
 ```
 
 - モデルのダウンロード
 ```
-$ cd fast_neural_style
+$ cd fast_neural_style 
 $ python download_saved_models.py
 ```
 # Usage
