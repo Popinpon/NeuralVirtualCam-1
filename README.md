@@ -11,7 +11,7 @@ $ conda install pytorch torchvision cudatoolkit=10.1 -c pytorch
 $ conda install -c conda-forge opencv
 
 $ pip install pyfakewebcam #for Linux
-$ pip install pyvirtualcam #fo Windows
+$ pip install pyvirtualcam #for Windows
 ```
 
 - モデルのダウンロード
