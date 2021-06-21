@@ -56,7 +56,7 @@ $ python main.py //defaultでいいなら省略可能
 - a,s,d,f : スタイル変更
 - z : 無変換
 
-#　おまけ
+# おまけ
 web camに流れている映像を確認したい場合はffplayコマンドを使う（Linux）
 ```
 ffplay /dev/video3
