@@ -1,7 +1,7 @@
 based on https://github.com/nenoNaninu/NeuralVirtualCam
 # NeuralVirtualCam
 実際のカメラから取得した画像をGANで変換して仮想カメラ経由で垂れ流すやつ。
-Linux専用かつGPU必須。
+Linux or Windows GPU必須。
 
 # Require
 ```
@@ -20,6 +20,9 @@ $ cd fast_neural_style
 $ python download_saved_models.py
 ```
 # Usage
+## 仮想カメラ
+
+### for linux
 ```
 $ ls /dev/|grep video
 ```
@@ -34,19 +37,27 @@ video2
 $ sudo modprobe v4l2loopback video_nr=3
 ```
 とコマンドを叩くことで仮想カメラの口をつくる。
+
+### for windows
+obs の仮想カメラをインストールするのみ
+
+### os共通
 口を用意したら
 ```
-// python main 接続先カメラ番号 出力先パス
-// 上で設定した仮想カメラ(/dev/video3)を出力先パスに渡す
-$ python main.py 0 /dev/video3
+$ python main.py 接続先カメラ番号(default=0) 出力先パス(default=\dev\video3)
+$ python main.py //defaultでいいなら省略可能
+
 ```
+
+
 
 動画が表示されているウィンドウにフォーカスして操作
 - q : 終了
 - a,s,d,f : スタイル変更
 - z : 無変換
 
-web camに流れている映像を確認したい場合はffplayコマンドを使う
+#　おまけ
+web camに流れている映像を確認したい場合はffplayコマンドを使う（Linux）
 ```
 ffplay /dev/video3
 ```
